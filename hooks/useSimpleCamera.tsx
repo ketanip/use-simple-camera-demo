@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 export const useSimpleCamera = () => {
   const [permissionAcquired, setPermissionAcquired] = useState<boolean>(false);
@@ -8,7 +8,7 @@ export const useSimpleCamera = () => {
   const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
   const [videoDevicesID, setVideoDevicesID] = useState<string[]>([]);
   const [audioDevicesID, setAudioDevicesID] = useState<string[]>([]);
-  const [videos, setVideos] = useState<{ id: string; data: string }[]>([]);
+  const [videos, setVideos] = useState<{ id: string; data: Blob }[]>([]);
   const [activeMediaRecorder, setActiveMediaRecorder] =
     useState<MediaRecorder | null>(null);
   const [currentVideoRecordingID, setCurrentVideoRecordingID] = useState<
@@ -150,7 +150,7 @@ export const useSimpleCamera = () => {
     audioStreamID: string;
   }
 
-  const videoBlobsRecorded: Blob[] = [];
+  let videoBlobsRecorded: Blob[] = [];
 
   const recordVideo = async (id: string, config?: RecordVideoConfig) => {
     if (currentVideoRecordingID)
@@ -181,6 +181,7 @@ export const useSimpleCamera = () => {
 
     setActiveMediaRecorder(mediaRecorder);
 
+    videoBlobsRecorded = [];
     mediaRecorder.addEventListener("dataavailable", (e) =>
       videoBlobsRecorded.push(e.data)
     );
@@ -190,9 +191,7 @@ export const useSimpleCamera = () => {
         ...videos,
         {
           id,
-          data: URL.createObjectURL(
-            new Blob(videoBlobsRecorded, { type: "video/webm" })
-          ),
+          data: new Blob(videoBlobsRecorded, { type: "video/webm" }),
         },
       ]);
     });
@@ -214,18 +213,48 @@ export const useSimpleCamera = () => {
     if (existingVideo.length == 0)
       throw new Error(`No video with ${videoID} exists.`);
 
-    return existingVideo[0].data;
+    return URL.createObjectURL(existingVideo[0].data);
   };
 
-  const downloadRecordedVideo = async (videoID: string) => {
+  const downloadRecordedVideo = async (videoID: string, filename?: string) => {
     const existingVideo = videos.filter((item) => item.id === videoID);
     if (existingVideo.length == 0)
       throw new Error(`No video with ${videoID} exists.`);
 
     const tempDownload = document.createElement("a");
-    tempDownload.href = existingVideo[0].data;
-    tempDownload.download = `${videoID}.webm`;
+    tempDownload.href = URL.createObjectURL(existingVideo[0].data);
+    tempDownload.download = `${filename ? filename : videoID}.webm`;
     tempDownload.click();
+  };
+
+  interface GetVideoStreamConfig {
+    videoID?: string | "none";
+    audioID?: string | "none";
+  }
+  const getVideoStream = async (config: GetVideoStreamConfig) => {
+    if (!mediaStream) throw new Error("Failed to initialize media stream.");
+
+    const tracks: MediaStreamTrack[] = [];
+
+    if (config.videoID && config.videoID != "none") {
+      const customVideoTrack = mediaStream.getTrackById(config.videoID);
+      if (!customVideoTrack) throw new Error("Invalid video source ID.");
+      tracks.push(customVideoTrack);
+    } else if (config.videoID != "none") {
+      const videoTracks = mediaStream.getVideoTracks();
+      if (videoTracks.length > 0) tracks.push(videoTracks[0]);
+    }
+
+    if (config.audioID && config.videoID != "none") {
+      const customAudioTrack = mediaStream.getTrackById(config.audioID);
+      if (!customAudioTrack) throw new Error("Invalid video source ID.");
+      tracks.push(customAudioTrack);
+    } else if (config.videoID != "none") {
+      const audioTracks = mediaStream.getAudioTracks();
+      if (audioTracks.length > 0) tracks.push(audioTracks[0]);
+    }
+
+    return new MediaStream(tracks);
   };
 
   return {
@@ -244,5 +273,6 @@ export const useSimpleCamera = () => {
     stopVideoRecording,
     getRecordedVideoURL,
     downloadRecordedVideo,
+    getVideoStream,
   };
 };
