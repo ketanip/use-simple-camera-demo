@@ -1,217 +1,307 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
-import { useSimpleCamera } from "@/hooks/useSimpleCamera";
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
+import { useSimpleCamera } from "use-simple-camera";
 import { useRef, useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import Link from "next/link";
 
 export default function Home() {
   const [imageURL, setImageURL] = useState("");
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLVideoElement>(null);
   const [videoRecodingID, setVideoRecordingID] = useState<string>("");
+  const [videoSourceID, setVideoSourceID] = useState("");
+  const [audiosSourceID, setAudioSourceID] = useState("");
 
   const {
-    permissionAcquired,
     acquirePermissions,
-    isCameraActive,
+    audioDevicesIDs,
     captureImage,
+    downloadRecordedVideo,
+    isCameraActive,
+    permissionAcquired,
+    recordVideo,
     startCamera,
     stopCamera,
     stopVideoRecording,
-    recordVideo,
-    downloadRecordedVideo,
-    getVideoStream,
     videoDevicesIDs,
-    audioDevicesIDs,
+    videoRecodingInProgress,
+    getMediaStream,
   } = useSimpleCamera();
 
   const captureImageLocal = async () => {
-    setImageURL(await captureImage());
-    console.log(imageURL);
+    try {
+      setImageURL(await captureImage(videoSourceID));
+    } catch (error: any) {
+      toast(error.message);
+    }
   };
 
   const startPlayingVideo = async () => {
-    const videoAndAudioSource = await getVideoStream({
-      audioID: "default",
-      videoID: "default",
-    });
-    if (videoRef.current) {
-      videoRef.current.srcObject = videoAndAudioSource;
-      videoRef.current.play();
+    try {
+      const videoAndAudioSource = await getMediaStream({
+        audioID: audiosSourceID,
+        videoID: videoSourceID,
+      });
+      if (videoRef.current) {
+        videoRef.current.srcObject = videoAndAudioSource;
+        videoRef.current.play();
+      }
+    } catch (error: any) {
+      toast(error.message);
+    }
+  };
+
+  const stopRecodingVideo = async () => {
+    try {
+      await stopVideoRecording();
+    } catch (error: any) {
+      toast(error.message);
     }
   };
 
   const stopPlayingVideo = async () => {
-    if (videoRef.current) videoRef.current.srcObject = null;
+    try {
+      if (videoRef.current) videoRef.current.srcObject = null;
+    } catch (error: any) {
+      toast(error.message);
+    }
   };
 
   const startPlayingAudio = async () => {
-    const videoAndAudioSource = await getVideoStream({
-      audioID: "default",
-      videoID: "none",
-    });
-    if (audioRef.current) {
-      audioRef.current.srcObject = videoAndAudioSource;
-      audioRef.current.play();
+    try {
+      const videoAndAudioSource = await getMediaStream({
+        audioID: "default",
+        videoID: "none",
+      });
+      if (audioRef.current) {
+        audioRef.current.srcObject = videoAndAudioSource;
+        audioRef.current.play();
+      }
+    } catch (error: any) {
+      toast(error.message);
     }
   };
 
   const stopPlayingAudio = async () => {
-    if (audioRef.current) audioRef.current.srcObject = null;
+    try {
+      if (audioRef.current) audioRef.current.srcObject = null;
+    } catch (error: any) {
+      toast(error.message);
+    }
   };
 
+  function downloadVideoWithVideoID(): void {
+    try {
+      downloadRecordedVideo(videoRecodingID, `${videoRecodingID}.webm`);
+    } catch (error: any) {
+      toast(error.message);
+    }
+  }
+
   return (
-    <div className="max-w-7xl mx-auto mt-20">
-      <div className="grid grid-cols-3 gap-2">
-        <div
-          className={
-            "mb-4 py-4  text-center font-semibold " +
-            (permissionAcquired ? "bg-green-200" : "bg-red-200")
-          }
-        >
-          Permissions Acquired: {permissionAcquired ? "TRUE" : "FALSE"}
+    <div className="max-w-7xl mx-auto  px-4 flex flex-col gap-4 min-h-screen">
+      <ToastContainer />
+      {/* Title */}
+      <div className="min-w-full bg-yellow-300 px-4 font-mono font-semibold text-xl text-center py-4 mb-4 border-2 border-black shadow-md">
+        <h3>Use-Simple-Camera Hook Demo</h3>
+      </div>
+
+      <div className="text-center bg-gray-50 py-2 md:hidden"> 
+        Use larger screens for better experience.
+      </div>
+
+      <div className="flex-1">
+        <div className="grid md:grid-cols-4 gap-2">
+          <div
+            className={
+              "mb-4 py-4  text-center font-semibold rounded shadow-md  " +
+              (permissionAcquired ? "bg-green-200" : "bg-red-200")
+            }
+          >
+            Permissions Acquired: {permissionAcquired ? "TRUE" : "FALSE"}
+          </div>
+
+          <div
+            className={
+              "mb-4 py-4  text-center font-semibold rounded shadow-md  " +
+              (isCameraActive ? "bg-green-200" : "bg-red-200")
+            }
+          >
+            Camera Active: {isCameraActive ? "TRUE" : "FALSE"}
+          </div>
+
+          <div
+            className={
+              "mb-4 py-4  text-center font-semibold bg-violet-200 rounded shadow-md  "
+            }
+          >
+            Video Recoding ID :{" "}
+            {videoRecodingID ? videoRecodingID : "NO VIDEO RECORDING ID"}
+          </div>
+
+          <div
+            className={
+              "mb-4 py-4  text-center font-semibold bg-violet-200 rounded shadow-md  "
+            }
+          >
+            Video Recoding :{" "}
+            {videoRecodingInProgress ? "TRUE" : "NO VIDEO RECORDING NOW"}
+          </div>
         </div>
 
-        <div
-          className={
-            "mb-4 py-4  text-center font-semibold " +
-            (isCameraActive ? "bg-green-200" : "bg-red-200")
-          }
-        >
-          Camera Active: {isCameraActive ? "TRUE" : "FALSE"}
+        <div className="grid md:grid-cols-3 gap-4 my-4">
+          <div className="flex flex-col">
+            <label className="font-semibold">Select Camera ID</label>
+            <select
+              name="active_video_id"
+              id="active_video_id"
+              className="p-2 rounded"
+              onChange={(e) => setVideoSourceID(e.target.value)}
+              defaultValue="default"
+            >
+              <option disabled value="default">
+                Select your camera
+              </option>
+              {videoDevicesIDs.map((item) => (
+                <option value={item.id} key={item.id}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="flex flex-col">
+            <label className="font-semibold">Select Audio Device ID</label>
+            <select
+              name="active_audio_id"
+              id="active_audio_id"
+              className="p-2 rounded"
+              onChange={(e) => setAudioSourceID(e.target.value)}
+              defaultValue="default"
+            >
+              <option disabled value="default">
+                Select your audio input
+              </option>
+
+              {audioDevicesIDs.map((item) => (
+                <option value={item.id} key={item.id}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="flex flex-col">
+            <label className="font-semibold">Enter Video ID</label>
+            <input
+              type="text"
+              name="video_id"
+              id="video_id"
+              className="p-2 rounded border"
+              onChange={(e) => setVideoRecordingID(e.target.value)}
+            />
+          </div>
         </div>
 
-        <div
-          className={
-            "mb-4 py-4  text-center font-semibold bg-violet-200" 
-          }
-        >
-          Video Recoding ID : {videoRecodingID ? videoRecodingID : "NO VIDEO RECORDING ID"}
+        <div className="grid md:grid-cols-2  gap-4 ">
+          <div className="grid md:grid-cols-4 gap-4">
+            <button
+              onClick={() => acquirePermissions()}
+              className="bg-gray-300 px-6 py-2"
+            >
+              Ask for permission
+            </button>
+            <button
+              onClick={() => startCamera()}
+              className="bg-gray-300 px-6 py-2"
+            >
+              Start Camera
+            </button>
+            <button
+              onClick={() => stopCamera()}
+              className="bg-gray-300 px-6 py-2"
+            >
+              Stop Camera
+            </button>
+            <button
+              onClick={captureImageLocal}
+              className="bg-gray-300 px-6 py-2"
+            >
+              Capture Image
+            </button>
+            <button
+              onClick={() =>
+                recordVideo(videoRecodingID).catch((err) => toast(err.message))
+              }
+              className="bg-gray-300 px-6 py-2"
+            >
+              Start Video Recoding
+            </button>
+            <button
+              onClick={stopRecodingVideo}
+              className="bg-gray-300 px-6 py-2"
+            >
+              Stop Video Recording
+            </button>
+            <button
+              onClick={downloadVideoWithVideoID}
+              className="bg-gray-300 px-6 py-2"
+            >
+              Download video
+            </button>
+            <button
+              onClick={() => startPlayingVideo()}
+              className="bg-gray-300 px-6 py-2"
+            >
+              Start Video Feed
+            </button>
+
+            <button
+              onClick={() => stopPlayingVideo()}
+              className="bg-gray-300 px-6 py-2"
+            >
+              Stop Video Feed
+            </button>
+
+            <button
+              onClick={() => startPlayingAudio()}
+              className="bg-gray-300 px-6 py-2"
+            >
+              Start Audio Feed
+            </button>
+
+            <button
+              onClick={() => stopPlayingAudio()}
+              className="bg-gray-300 px-6 py-2"
+            >
+              Stop Audio Feed
+            </button>
+          </div>
+
+          {imageURL && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={imageURL}
+              alt=""
+              className="min-h-52 min-w-full bg-gray-50"
+            />
+          )}
+
+          {videoRef && <video ref={videoRef} controls />}
+          {audioRef && <audio ref={audioRef} controls />}
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 my-4">
-        <div className="flex flex-col">
-          <label className="font-semibold">Select Camera ID</label>
-          <select
-            name="active_video_id"
-            id="active_video_id"
-            className="p-2 rounded"
-          >
-            {videoDevicesIDs.map((item) => (
-              <option value={item} key={item}>
-                {item}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="flex flex-col">
-          <label className="font-semibold">Select Audio Device ID</label>
-          <select
-            name="active_audio_id"
-            id="active_audio_id"
-            className="p-2 rounded"
-          >
-            {audioDevicesIDs.map((item) => (
-              <option value={item} key={item}>
-                {item}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="flex flex-col">
-          <label className="font-semibold">Enter Video ID</label>
-          <input
-            type="text"
-            name="video_id"
-            id="video_id"
-            className="p-2 rounded border"
-            onChange={e => setVideoRecordingID(e.target.value)}
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2  gap-4 ">
-        <div className="grid grid-cols-4 gap-4">
-          <button
-            onClick={(e) => acquirePermissions()}
-            className="bg-gray-300 px-6 py-2"
-          >
-            Ask for permission
-          </button>
-          <button
-            onClick={(e) => startCamera()}
-            className="bg-gray-300 px-6 py-2"
-          >
-            Start Camera
-          </button>
-          <button
-            onClick={(e) => stopCamera()}
-            className="bg-gray-300 px-6 py-2"
-          >
-            Stop Camera
-          </button>
-          <button onClick={captureImageLocal} className="bg-gray-300 px-6 py-2">
-            Capture Image
-          </button>
-          <button
-            onClick={(e) => recordVideo(videoRecodingID)}
-            className="bg-gray-300 px-6 py-2"
-          >
-            Start Video Recoding
-          </button>
-          <button
-            onClick={(e) => stopVideoRecording()}
-            className="bg-gray-300 px-6 py-2"
-          >
-            Stop Video Recording
-          </button>
-          <button
-            onClick={(e) => downloadRecordedVideo(videoRecodingID, videoRecodingID)}
-            className="bg-gray-300 px-6 py-2"
-          >
-            Download video
-          </button>
-          <button
-            onClick={(e) => startPlayingVideo()}
-            className="bg-gray-300 px-6 py-2"
-          >
-            Start Video Feed
-          </button>
-
-          <button
-            onClick={(e) => stopPlayingVideo()}
-            className="bg-gray-300 px-6 py-2"
-          >
-            Stop Video Feed
-          </button>
-
-          <button
-            onClick={(e) => startPlayingAudio()}
-            className="bg-gray-300 px-6 py-2"
-          >
-            Start Audio Feed
-          </button>
-
-          <button
-            onClick={(e) => stopPlayingAudio()}
-            className="bg-gray-300 px-6 py-2"
-          >
-            Stop Audio Feed
-          </button>
-        </div>
-
-        {/* <video  src={mediaStream.}/> */}
-
-        {imageURL && (
-          <img
-            src={imageURL}
-            alt=""
-            className="min-h-52 min-w-full bg-gray-50"
-          />
-        )}
-
-        {videoRef && <video ref={videoRef} controls />}
-        {audioRef && <audio ref={audioRef} controls />}
+      <div className="bg-gray-50 text-center min-w-full py-4 ">
+        Find it on{" "}
+        <Link href="https://github.com/ketanip/use-simple-camera" className="font-semibold underline text-blue-400 hover:cursor-pointer hover:text-blue-500">Github</Link>{" "}
+        and{" "}
+        <Link href="https://www.npmjs.com/package/use-simple-camera" className="font-semibold underline text-blue-400 hover:cursor-pointer hover:text-blue-500">
+          npmjs
+        </Link>
+        .
       </div>
     </div>
   );
