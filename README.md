@@ -1,36 +1,36 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎥 Use Simple Camera Demo
 
-## Getting Started
+## 🛠️ Overview
 
-First, run the development server:
+**Use Simple Camera** is a lightweight React hook that simplifies the process of interacting with browser APIs to capture audio and video from media devices. It abstracts the complexities of handling permissions, media streams, and recording operations, providing a seamless developer experience for building camera-enabled applications.
+
+Whether you're building a video conferencing app, a custom video recording tool, or an image capture utility, **Use Simple Camera** equips you with all the essential functionalities in one easy-to-use package.
+
+Life's too short for clunky APIs! Whether you're creating a photo booth, live streaming app, or a casual media tool, **Use Simple Camera** is your new best friend (BFF).
+
+## 🚨 Demo Project
+
+This repository is a simple demo project showcasing how to use the **Use Simple Camera** hook. For full documentation, installation, and more advanced examples, please check the official resources linked below.
+
+## 📦 Installation
+
+You can install **Use Simple Camera** using npm or yarn:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install use-simple-camera
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+or
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+yarn add use-simple-camera
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📖 Documentation & More Details
 
-## Learn More
+For detailed documentation and usage examples, visit the official repository:
 
-To learn more about Next.js, take a look at the following resources:
+- [GitHub Repository](https://github.com/ketanip/use-simple-camera)
+- [NPM Package](https://www.npmjs.com/package/use-simple-camera)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Enjoy the simplicity of camera integration with **Use Simple Camera**! 🎉
