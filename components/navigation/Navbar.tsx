@@ -29,10 +29,16 @@ const Navbar = () => {
           </div>
         </Link>
         <div className="flex gap-6 items-center">
-          <Link href="/">
+          <Link
+            href="https://github.com/ketanip/use-simple-camera"
+            target="_new"
+          >
             <FaGithub className="text-3xl" />
           </Link>
-          <Link href="/">
+          <Link
+            href="https://www.npmjs.com/package/use-simple-camera"
+            target="_new"
+          >
             <FaNpm className="text-4xl" />
           </Link>
 
