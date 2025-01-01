@@ -2,9 +2,7 @@
 
 import React, { useContext, useRef, useState } from "react";
 import { Button } from "../ui/button";
-import { FaCameraRetro, FaDownload } from "react-icons/fa";
 import { Separator } from "../ui/separator";
-import { CiImageOn } from "react-icons/ci";
 import { toast } from "react-toastify";
 import { HookContext } from "../contexts/UseSimpleStateContext";
 import { Label } from "../ui/label";
@@ -13,6 +11,7 @@ import { Download, PlayIcon } from "lucide-react";
 import { IoVideocamOff, IoVideocam } from "react-icons/io5";
 
 import { BiSolidVideos } from "react-icons/bi";
+import { sendGAEvent } from "@next/third-parties/google";
 
 const RecordVideo = () => {
   // Getting access to the use-simple-camera hook.
@@ -50,7 +49,12 @@ const RecordVideo = () => {
           throw new Error(
             "Identifier specified for this video recoding is already in use."
           );
-        else await hook.recordVideo(activeVideoRecodingID);
+        else {
+          sendGAEvent("event", "start-video-recording", {
+            value: { id: activeVideoRecodingID },
+          });
+          await hook.recordVideo(activeVideoRecodingID);
+        }
       } else toast("Please enter a valid identifier for the video recoding.");
     } catch (error: any) {
       toast(error.message);
@@ -63,20 +67,31 @@ const RecordVideo = () => {
       return;
     }
     videoRef.current = null;
+    sendGAEvent("event", "stop-video-recording", {
+      value: { id: activeVideoRecodingID },
+    });
+
     await hook.stopVideoRecording();
   };
 
   const handleVideoDownload = (id: string) => {
     const res = hook.videoProcessingStatus.find((item) => item.id === id);
-    if (res && res.status == "ready")
+    if (res && res.status === "ready") {
+      sendGAEvent("event", "download-video-recording", {
+        value: { id },
+      });
       hook.downloadRecordedVideo(res.id, `${res.id}.webm`);
-    else toast("We are working to process your video. 😃");
+    } else toast("We are working to process your video. 😃");
   };
 
   const playVideo = (id: string) => {
     const res = hook.videoProcessingStatus.find((item) => item.id === id);
-    if (res && res.status == "ready") setPlayVideoID(id);
-    else toast("We are working to process your video. 😃");
+    if (res && res.status === "ready") {
+      sendGAEvent("event", "play-video-recording", {
+        value: { id },
+      });
+      setPlayVideoID(id);
+    } else toast("We are working to process your video. 😃");
   };
 
   return (

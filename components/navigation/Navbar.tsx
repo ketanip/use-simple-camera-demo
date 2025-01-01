@@ -7,6 +7,7 @@ import { FaVideo, FaVideoSlash } from "react-icons/fa6";
 import Link from "next/link";
 import { ToastContainer } from "react-toastify";
 import { HookContext } from "../contexts/UseSimpleStateContext";
+import { sendGAEvent } from "@next/third-parties/google";
 
 const Navbar = () => {
   // Getting access to the use-simple-camera hook.
@@ -15,6 +16,7 @@ const Navbar = () => {
   const { hook } = context;
 
   const toggleCamera = () => {
+    sendGAEvent("event", "camera-toggle");
     if (hook.isCameraActive) hook.stopCamera();
     else hook.startCamera();
   };
@@ -31,13 +33,23 @@ const Navbar = () => {
         <div className="flex gap-6 items-center">
           <Link
             href="https://github.com/ketanip/use-simple-camera"
-            target="_new"
+            target="_blank"
+            onClick={() =>
+              sendGAEvent("event", "external-redirection", {
+                value: "github-source-repo",
+              })
+            }
           >
             <FaGithub className="text-3xl" />
           </Link>
           <Link
             href="https://www.npmjs.com/package/use-simple-camera"
-            target="_new"
+            target="_blank"
+            onClick={() =>
+              sendGAEvent("event", "external-redirection", {
+                value: "npm-package",
+              })
+            }
           >
             <FaNpm className="text-4xl" />
           </Link>

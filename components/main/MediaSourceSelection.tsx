@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { sendGAEvent } from "@next/third-parties/google";
 
 const MediaSourceSelection = () => {
   // Getting access to the use-simple-camera hook.
@@ -25,7 +26,12 @@ const MediaSourceSelection = () => {
       {/* Video source */}
       <div className="flex items-center gap-4">
         <Label className="font-semibold text-nowrap">Video Source</Label>
-        <Select onValueChange={(newVal) => setVideoID(newVal)}>
+        <Select
+          onValueChange={(newVal) => {
+            sendGAEvent("event", "changed-video-id", { id: newVal });
+            setVideoID(newVal);
+          }}
+        >
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Select Video Source" />
           </SelectTrigger>
@@ -43,7 +49,12 @@ const MediaSourceSelection = () => {
       {/* Audio source */}
       <div className="flex items-center gap-4">
         <Label className="font-semibold text-nowrap">Audio Source</Label>
-        <Select onValueChange={(newVal) => setAudioID(newVal)}>
+        <Select
+          onValueChange={(newVal) => {
+            sendGAEvent("event", "changed-audio-id", { id: newVal });
+            setAudioID(newVal);
+          }}
+        >
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Select Audio Source" />
           </SelectTrigger>

@@ -4,6 +4,7 @@ import "./globals.css";
 import HookContextProvider from "@/components/contexts/UseSimpleStateContext";
 import MediaSourceSelection from "@/components/main/MediaSourceSelection";
 import Navbar from "@/components/navigation/Navbar";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 export const metadata: Metadata = {
   title: "Demo for use-simple-camera",
@@ -37,6 +38,9 @@ export default function RootLayout({
             {children}
           </div>
         </HookContextProvider>
+
+        {/* Google Analytics */}
+        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || ""} />
       </body>
     </html>
   );

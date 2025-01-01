@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { BiLink } from "react-icons/bi";
 import { FaCameraRetro, FaVideo } from "react-icons/fa";
 import { IoAlertCircleSharp } from "react-icons/io5";
 

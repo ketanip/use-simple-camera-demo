@@ -7,9 +7,9 @@ import { Separator } from "../ui/separator";
 import { CiImageOn } from "react-icons/ci";
 import { toast } from "react-toastify";
 import { HookContext } from "../contexts/UseSimpleStateContext";
+import { sendGAEvent } from "@next/third-parties/google";
 
 const CaptureImage = () => {
-  
   // Getting access to the use-simple-camera hook.
   const context = useContext(HookContext);
   if (!context) return <></>;
@@ -24,6 +24,7 @@ const CaptureImage = () => {
       const capturedImage = await hook.captureImage(videoID);
       setCapturedImages([...capturedImages, capturedImage]);
       setActiveImage(capturedImages.length - 1);
+      sendGAEvent("event", "image-captured");
     } catch (error: any) {
       toast(error.message);
     }
@@ -36,6 +37,7 @@ const CaptureImage = () => {
       "use-simple-camera" + new Date().toISOString();
     imageDownloadElement.click();
     imageDownloadElement.remove();
+    sendGAEvent("event", "image-downloaded");
   };
 
   return (
