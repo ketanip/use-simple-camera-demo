@@ -83,7 +83,11 @@ const RecordVideo = () => {
     <div className="grid md:grid-cols-4 gap-4 min-h-[85vh] bg-white my-auto border rounded-lg md:px-12 py-8">
       <div className="col-span-3 border-r border-gray-300 min-h-max p-4  flex">
         {playVideoID === null && hook.isCameraActive && videoRef && (
-          <video ref={videoRef} className="mx-auto my-auto rounded shadow" />
+          <video
+            ref={videoRef}
+            className="mx-auto my-auto rounded shadow"
+            controls
+          />
         )}
         {playVideoID !== null && !hook.videoRecodingInProgress && (
           <video
@@ -167,7 +171,7 @@ const RecordVideo = () => {
           ) : (
             <div className="text-nowrap flex flex-col gap-2  mx-auto my-auto pt-8 text-gray-600">
               <div className="mx-auto">
-                <BiSolidVideos  className="text-2xl" />
+                <BiSolidVideos className="text-2xl" />
               </div>
               <span>Record videos to get started.</span>
             </div>

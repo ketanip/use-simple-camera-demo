@@ -43,7 +43,7 @@ export default function Home() {
             </div>
 
             <span className="font-semibold">Features:</span>
-            <ol className="">
+            <ol>
               <li>1. Capture Image</li>
               <li>2. Download Image</li>
               <li>3. View Image</li>
@@ -68,9 +68,10 @@ export default function Home() {
 
             <span className="font-semibold">Features:</span>
             <ol className="">
-              <li>1. Capture Image</li>
-              <li>2. Download Image</li>
-              <li>3. View Image</li>
+              <li>1. See video and Audio Feed</li>
+              <li>2. Record Video</li>
+              <li>3. Download Recorded Videos</li>
+              <li>4. Play Recorded Videos</li>
             </ol>
 
             <Link href="/record-video">
