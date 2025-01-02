@@ -16,7 +16,7 @@ const MediaSourceSelection = () => {
   // Getting access to the use-simple-camera hook.
   const context = useContext(HookContext);
   if (!context) return <></>;
-  const { hook, setVideoID, setAudioID } = context;
+  const { hook, setVideoID, setAudioID, audioID, videoID } = context;
 
   // If camera is not active.
   if (!hook.isCameraActive) return <></>;
@@ -31,6 +31,7 @@ const MediaSourceSelection = () => {
             sendGAEvent("event", "changed-video-id", { id: newVal });
             setVideoID(newVal);
           }}
+          value={videoID}
         >
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Select Video Source" />
@@ -54,6 +55,7 @@ const MediaSourceSelection = () => {
             sendGAEvent("event", "changed-audio-id", { id: newVal });
             setAudioID(newVal);
           }}
+          value={audioID}
         >
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Select Audio Source" />

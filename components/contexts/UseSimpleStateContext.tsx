@@ -1,6 +1,6 @@
 "use client";
 import { useSimpleCamera } from "use-simple-camera";
-import React, { createContext, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 
 interface ContextData {
   hook: ReturnType<typeof useSimpleCamera>;
@@ -18,8 +18,23 @@ interface Props {
 
 const HookContextProvider: React.FC<Props> = ({ children }) => {
   const hook = useSimpleCamera();
-  const [videoID, setVideoID] = useState<string>("default");
-  const [audioID, setAudioID] = useState<string>("default");
+
+  const [videoID, setVideoID] = useState<string>("");
+  const [audioID, setAudioID] = useState<string>("");
+
+  useEffect(() => {
+    const setDefaultAudioAndVideoIDs = () => {
+      if (hook.videoDevicesIDs.length > 0 && videoID === "") {
+        setVideoID(hook.videoDevicesIDs[0].id);
+      }
+      if (hook.audioDevicesIDs.length > 0 && audioID === "") {
+        setAudioID(hook.audioDevicesIDs[0].id);
+      }
+    };
+    setDefaultAudioAndVideoIDs();
+    return () => {};
+  }, [hook.videoDevicesIDs, hook.audioDevicesIDs]);
+
   return (
     <HookContext.Provider
       value={{
