@@ -18,7 +18,7 @@ export default function Home() {
         </span>
       </div>
 
-      <div className="bg-white p-4 rounded-lg border flex items-center gap-3">
+{/*       <div className="bg-white p-4 rounded-lg border flex items-center gap-3">
         <div>
           <IoAlertCircleSharp className="text-2xl text-orange-400" />
         </div>
@@ -27,7 +27,7 @@ export default function Home() {
           <b>use desktop for smoother experience</b>.
         </span>
       </div>
-
+ */}
       <div className="mt-4">
         <h2 className="text-2xl font-semibold">Demos</h2>
         <div className="grid md:grid-cols-3 gap-4 mt-4">
